@@ -30,7 +30,9 @@ Write-Host $FW1RGName $VMFW1Name
 
 # Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name
 
-
-$VMDetail = Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -StatusCode
+Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
+Write-Host '============================'
+Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name
+$VMDetail = Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
 
 Write-Host $VMDetail
