@@ -59,4 +59,4 @@ Write-Host $FW1RGName $VMFW1Name
 
 $FW1Down = Test-VMStatus -VM $VMFW1Name -FwResourceGroup $FW1RGName
 
-Write-Host $FW1Down
+Write-Host " FWDown is: $FW1Down "
