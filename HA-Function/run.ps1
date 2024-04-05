@@ -5,17 +5,46 @@ param($Timer)
 $currentUTCtime = (Get-Date).ToUniversalTime()
 
 # The 'IsPastDue' property is 'true' when the current function invocation is later than scheduled.
-if ($Timer.IsPastDue) {
-    Write-Host "PowerShell timer is running late!"
-}
-
+#if ($Timer.IsPastDue) {
+#    Write-Host "PowerShell timer is running late!"
+#}
+#
 # Write an information log with the current time.
-Write-Host "PowerShell timer trigger function ran! TIME: $currentUTCtime"
+#Write-Host "PowerShell timer trigger function ran! TIME: $currentUTCtime"
+
+Write-Output -InputObject "HA NVA timer trigger function executed at:$(Get-Date)"
+
+#--------------------------------------------------------------------------
+# Set firewall monitoring variables here
+#--------------------------------------------------------------------------
 
 
 
 $VMFW1Name = $env:FW1NAME      # Set the Name of the primary NVA firewall
 $FW1RGName = $env:FWRGNAME     # Set the ResourceGroup that contains FW1
+
+
+
+#--------------------------------------------------------------------------
+# Code blocks for supporting functions
+#--------------------------------------------------------------------------
+
+
+Function Test-VMStatus ($VM, $FWResourceGroup) 
+{
+  $VMDetail = Get-AzVM -ResourceGroupName $FWResourceGroup -Name $VM -Status
+  foreach ($VMStatus in $VMDetail.Statuses)
+  { 
+    $Status = $VMStatus.code
+      
+    if($Status.CompareTo('PowerState/running') -eq 0)
+    {
+      Return $False
+    }
+  }
+  Return $True  
+}
+
 
 
 $Password = ConvertTo-SecureString $env:SP_PASSWORD -AsPlainText -Force
@@ -28,15 +57,6 @@ Set-AzContext -Context $Context
 
 Write-Host $FW1RGName $VMFW1Name
 
-# Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name
+$FW1Down = Test-VMStatus -VM $VMFW1Name -FwResourceGroup $FW1RGName
 
-Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
-Write-Host '============================'
-Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name
-$VMDetail = Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
-
-$VMStatus = $VMDetail.Statuses.code
-
-Write-Host $VMStatus
-
-Write-Host $VMDetail.Statuses
+Write-Host $FW1Down
