@@ -35,4 +35,8 @@ Write-Host '============================'
 Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name
 $VMDetail = Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
 
-Write-Host $VMDetail
+$VMStatus = $VMDetail.Statuses.code
+
+Write-Host $VMStatus
+
+Write-Host $VMDetail.Statuses
