@@ -28,9 +28,9 @@ Set-AzContext -Context $Context
 
 Write-Host $FW1RGName $VMFW1Name
 
-Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name
+# Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name
 
 
-$VMDetail = Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
+$VMDetail = Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -StatusCode
 
-Write-Host $VMDetail.Statuses
+Write-Host $VMDetail
