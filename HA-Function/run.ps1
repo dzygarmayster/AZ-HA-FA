@@ -11,3 +11,21 @@ if ($Timer.IsPastDue) {
 
 # Write an information log with the current time.
 Write-Host "PowerShell timer trigger function ran! TIME: $currentUTCtime"
+
+
+
+$VMFW1Name = $env:FW1NAME      # Set the Name of the primary NVA firewall
+$FW1RGName = $env:FWRGNAME     # Set the ResourceGroup that contains FW1
+
+
+$Password = ConvertTo-SecureString $env:SP_PASSWORD -AsPlainText -Force
+$Credential = New-Object System.Management.Automation.PSCredential ($env:SP_USERNAME, $Password)
+$AzureEnv = Get-AzEnvironment -Name $env:AZURECLOUD
+Connect-AzAccount -ServicePrincipal -Tenant $env:TENANTID -Credential $Credential -Subscription $env:SUBSCRIPTIONID -Environment $AzureEnv
+
+$Context = Get-AzContext
+Set-AzContext -Context $Context
+
+$VMDetail = Get-AzureRmVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
+
+Write-Host $VMDetail
