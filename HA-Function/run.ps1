@@ -26,6 +26,6 @@ Connect-AzAccount -ServicePrincipal -Tenant $env:TENANTID -Credential $Credentia
 $Context = Get-AzContext
 Set-AzContext -Context $Context
 
-$VMDetail = Get-AzureRmVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
+$VMDetail = Get-AzVM -ResourceGroupName $FW1RGName -Name $VMFW1Name -Status
 
 Write-Host $VMDetail
