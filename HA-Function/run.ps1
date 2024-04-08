@@ -76,4 +76,4 @@ Write-Host " FW1Down is: $FW1Down "
 
 $Res = Get-AzResource -TagName nva_ha_udr -TagValue $TagValue
 
-Write-Host $Res
+Write-Host " Route Table with tag: $Res "
