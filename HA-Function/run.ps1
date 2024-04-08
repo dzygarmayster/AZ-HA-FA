@@ -137,16 +137,18 @@ Function Start-Failback
           {
           #  Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $PrimaryInts[$i]
 			$Script:RoutesToChange += $RouteName.Name
+			$Script:PrefixesToChange += $RouteName.AddressPrefix
           }  
         }
 
       }  
 	  Write-Host " Routes: $RoutesToChange "
+	  Write-Host " Prefixes: $PrefixesToChange "
 	  
-	  foreach ($RName in $RoutesToChange)
+	  for ($i = 0; $i -lt $RoutesToChange.count; $i++)
 	  {
 		Write-Output -InputObject "Updating route table..."
-		Set-AzRouteConfig -Name $RName  -NextHopType VirtualAppliance -RouteTable $Table -NextHopIpAddress $PrimaryInts[$i]
+		Set-AzRouteConfig -Name $RoutesToChange[$i]  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $PrefixesToChange[$i] -NextHopIpAddress $PrimaryInts[$i]
 	  }
 	  
 	  
@@ -213,6 +215,7 @@ $Script:PrimaryInts = @()
 $Script:SecondaryInts = @()
 $Script:ListOfSubscriptionIDs = @()
 $Script:RoutesToChange = @()
+$Script:PrefixesToChange = @()
 
 # Check NVA firewall status $intTries with $intSleep between tries
 
