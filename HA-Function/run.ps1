@@ -120,7 +120,7 @@ Function Start-Failback
     foreach ($RTable in $Res)
     {
       $Table = Get-AzRouteTable -ResourceGroupName $RTable.ResourceGroupName -Name $RTable.Name
-
+	  $RoutesToChange[]
       foreach ($RouteName in $Table.Routes)
       {
         
