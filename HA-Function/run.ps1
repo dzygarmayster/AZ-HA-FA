@@ -73,7 +73,7 @@ Set-AzContext -Context $Context
 $FW1Down = Test-VMStatus -VM $VMFW1Name -FwResourceGroup $FW1RGName
 
 Write-Host " FW1Down is: $FW1Down "
-
-$Res = Get-AzResource -TagName nva_ha_udr -TagValue $TagValue | Format-Table
+Get-AzResource -TagName nva_ha_udr -TagValue $TagValue | Format-Table
+$Res = Get-AzResource -TagName nva_ha_udr -TagValue $TagValue 
 
 Write-Host " Route Table with tag: $Res "
