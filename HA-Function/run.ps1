@@ -55,6 +55,18 @@ Function Test-VMStatus ($VM, $FWResourceGroup)
   Return $True  
 }
 
+
+
+Function Test-TCPPort ($Server, $Port)
+{
+  $TCPClient = New-Object -TypeName system.Net.Sockets.TcpClient
+  $Iar = $TCPClient.BeginConnect($Server, $Port, $Null, $Null)
+  $Wait = $Iar.AsyncWaitHandle.WaitOne(1000, $False)
+  return $Wait
+}
+
+
+
 Function Start-Failover 
 {
   foreach ($SubscriptionID in $Script:ListOfSubscriptionIDs){
@@ -94,6 +106,48 @@ Function Start-Failover
   }
 
 #  Send-AlertMessage -message "NVA Alert: Failover to Secondary FW2"
+
+}
+
+Function Start-Failback 
+{
+  foreach ($SubscriptionID in $Script:ListOfSubscriptionIDs)
+  {
+    Set-AzContext -Subscription $SubscriptionID
+    $TagValue = $env:FWUDRTAG
+    $Res = Get-AzResource -TagName nva_ha_udr -TagValue $TagValue
+
+    foreach ($RTable in $Res)
+    {
+      $Table = Get-AzRouteTable -ResourceGroupName $RTable.ResourceGroupName -Name $RTable.Name
+
+      foreach ($RouteName in $Table.Routes)
+      {
+        Write-Output -InputObject "Updating route table..."
+        Write-Output -InputObject $RTable.Name
+
+        for ($i = 0; $i -lt $PrimaryInts.count; $i++)
+        {
+          if($RouteName.NextHopIpAddress -eq $PrimaryInts[$i])
+          {
+            Write-Output -InputObject 'Primary NVA is already ACTIVE' 
+          
+          }
+          elseif($RouteName.NextHopIpAddress -eq $SecondaryInts[$i])
+          {
+            Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $PrimaryInts[$i]
+          }  
+        }
+
+      }  
+
+      $UpdateTable = [scriptblock]{param($Table) Set-AzRouteTable -RouteTable $Table}
+      &$UpdateTable $Table 
+
+    }
+  }
+  
+# Send-AlertMessage -message "NVA Alert: Failback to Primary FW1"
 
 }
 
@@ -171,3 +225,5 @@ Write-Host " Interfaces: $PrimaryInts $SecondaryInts "
 Write-Host " Route Table with tag: $Res "
 
 Write-Host " ListofSubs: $ListOfSubscriptionIDs "
+Write-Host " VMs: $VMS "
+
