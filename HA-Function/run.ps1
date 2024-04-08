@@ -23,6 +23,7 @@ $VMFW2Name = $env:FW2NAME      # Set the Name of the secondary NVA firewall
 $FW1RGName = $env:FWRGNAME     # Set the ResourceGroup that contains FW1
 $FW2RGName = $env:FWRGNAME     # Set the ResourceGroup that contains FW2
 $Monitor = $env:FWMONITOR      # "VMStatus" or "TCPPort" are valid values
+$TagValue = $env:FWUDRTAG
 
 #--------------------------------------------------------------------------
 # Set the failover and failback behavior for the firewalls
