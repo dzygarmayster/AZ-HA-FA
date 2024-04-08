@@ -94,11 +94,17 @@ Function Start-Failover
           elseif($RouteName.NextHopIpAddress -eq $PrimaryInts[$i])
           {
            # Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $SecondaryInts[$i] 
+		   $Script:RoutesToChange += $RouteName.Name
+		   $Script:PrefixesToChange += $RouteName.AddressPrefix
           }
         }
 
       }
-  
+	  for ($i = 0; $i -lt $RoutesToChange.count; $i++)
+	  {
+		Write-Output -InputObject "Updating route table..."
+		Set-AzRouteConfig -Name $RoutesToChange[$i]  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $PrefixesToChange[$i] -NextHopIpAddress $SecondaryInts[0]
+	  }
       $UpdateTable = [scriptblock]{param($Table) Set-AzRouteTable -RouteTable $Table}
       &$UpdateTable $Table
 
