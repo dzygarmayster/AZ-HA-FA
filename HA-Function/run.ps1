@@ -93,7 +93,7 @@ Function Start-Failover
           }
           elseif($RouteName.NextHopIpAddress -eq $PrimaryInts[$i])
           {
-            Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $SecondaryInts[$i] 
+           # Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $SecondaryInts[$i] 
           }
         }
 
@@ -121,7 +121,7 @@ Function Start-Failback
     {
       $Table = Get-AzRouteTable -ResourceGroupName $RTable.ResourceGroupName -Name $RTable.Name
 
-      foreach ($RouteName in $Table.Routes.ToList())
+      foreach ($RouteName in $Table.Routes)
       {
         Write-Output -InputObject "Updating route table..."
         Write-Output -InputObject $RTable.Name
@@ -135,12 +135,13 @@ Function Start-Failback
           }
           elseif($RouteName.NextHopIpAddress -eq $SecondaryInts[$i])
           {
-            Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $PrimaryInts[$i]
+          #  Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $PrimaryInts[$i]
+			$RoutesToChange += $RouteName.Name
           }  
         }
 
       }  
-
+	  Write-Host " Routes: $RoutesToChange "
       $UpdateTable = [scriptblock]{param($Table) Set-AzRouteTable -RouteTable $Table}
       &$UpdateTable $Table 
 
