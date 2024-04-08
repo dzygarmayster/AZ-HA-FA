@@ -79,11 +79,9 @@ Function Start-Failover
     {
       $Table = Get-AzRouteTable -ResourceGroupName $RTable.ResourceGroupName -Name $RTable.Name
       
-      foreach ($RouteName in $Table.Routes.ToList())
+      foreach ($RouteName in $Table.Routes)
       {
-        Write-Output -InputObject "Updating route table..."
-        Write-Output -InputObject $RTable.Name
-
+        
         for ($i = 0; $i -lt $PrimaryInts.count; $i++)
         {
           if($RouteName.NextHopIpAddress -eq $SecondaryInts[$i])
@@ -103,6 +101,7 @@ Function Start-Failover
 	  for ($i = 0; $i -lt $RoutesToChange.count; $i++)
 	  {
 		Write-Output -InputObject "Updating route table..."
+		Write-Output -InputObject $RTable.Name
 		Set-AzRouteConfig -Name $RoutesToChange[$i]  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $PrefixesToChange[$i] -NextHopIpAddress $SecondaryInts[0]
 	  }
       $UpdateTable = [scriptblock]{param($Table) Set-AzRouteTable -RouteTable $Table}
