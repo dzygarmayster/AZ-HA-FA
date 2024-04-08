@@ -129,7 +129,7 @@ Function Get-FWInterfaces
 Function Get-Subscriptions
 {
   Write-Output -InputObject "Enumerating all subscriptins ..."
-  $Script:ListOfSubscriptionIDs = (Get-AzSubscription).Subscription
+  $Script:ListOfSubscriptionIDs = (Get-AzSubscription).SubscriptionId
   Write-Output -InputObject $Script:ListOfSubscriptionIDs
 }
 
