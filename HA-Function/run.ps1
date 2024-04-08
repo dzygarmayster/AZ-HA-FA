@@ -120,7 +120,7 @@ Function Start-Failback
     foreach ($RTable in $Res)
     {
       $Table = Get-AzRouteTable -ResourceGroupName $RTable.ResourceGroupName -Name $RTable.Name
-	  $RoutesToChange[]
+	 
       foreach ($RouteName in $Table.Routes)
       {
         
@@ -212,6 +212,7 @@ Set-AzContext -Context $Context
 $Script:PrimaryInts = @()
 $Script:SecondaryInts = @()
 $Script:ListOfSubscriptionIDs = @()
+$Script:RoutesToChange = @()
 
 # Check NVA firewall status $intTries with $intSleep between tries
 
