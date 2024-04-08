@@ -123,7 +123,7 @@ Function Start-Failback
 
       foreach ($RouteName in $Table.Routes)
       {
-        Write-Output -InputObject "Updating route table..."
+        
         Write-Output -InputObject $RTable.Name
 
         for ($i = 0; $i -lt $PrimaryInts.count; $i++)
@@ -142,6 +142,14 @@ Function Start-Failback
 
       }  
 	  Write-Host " Routes: $RoutesToChange "
+	  
+	  foreach ($RName in $RoutesToChange)
+	  {
+		Write-Output -InputObject "Updating route table..."
+		Set-AzRouteConfig -Name $RName  -NextHopType VirtualAppliance -RouteTable $Table -NextHopIpAddress $PrimaryInts[$i]
+	  }
+	  
+	  
       $UpdateTable = [scriptblock]{param($Table) Set-AzRouteTable -RouteTable $Table}
       &$UpdateTable $Table 
 
