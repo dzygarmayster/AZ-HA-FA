@@ -148,7 +148,7 @@ Function Start-Failback
 	  for ($i = 0; $i -lt $RoutesToChange.count; $i++)
 	  {
 		Write-Output -InputObject "Updating route table..."
-		Set-AzRouteConfig -Name $RoutesToChange[$i]  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $PrefixesToChange[$i] -NextHopIpAddress $PrimaryInts[$i]
+		Set-AzRouteConfig -Name $RoutesToChange[$i]  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $PrefixesToChange[$i] -NextHopIpAddress $PrimaryInts[1]
 	  }
 	  
 	  
