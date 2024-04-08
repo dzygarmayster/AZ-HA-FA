@@ -136,7 +136,7 @@ Function Start-Failback
           elseif($RouteName.NextHopIpAddress -eq $SecondaryInts[$i])
           {
           #  Set-AzRouteConfig -Name $RouteName.Name  -NextHopType VirtualAppliance -RouteTable $Table -AddressPrefix $RouteName.AddressPrefix -NextHopIpAddress $PrimaryInts[$i]
-			$RoutesToChange += $RouteName.Name
+			$RoutesToChange.Add($RouteName.Name)
           }  
         }
 
