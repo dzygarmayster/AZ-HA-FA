@@ -79,7 +79,7 @@ Function Start-Failover
     {
       $Table = Get-AzRouteTable -ResourceGroupName $RTable.ResourceGroupName -Name $RTable.Name
       
-      foreach ($RouteName in $Table.Routes)
+      foreach ($RouteName in $Table.Routes.ToList())
       {
         Write-Output -InputObject "Updating route table..."
         Write-Output -InputObject $RTable.Name
@@ -121,7 +121,7 @@ Function Start-Failback
     {
       $Table = Get-AzRouteTable -ResourceGroupName $RTable.ResourceGroupName -Name $RTable.Name
 
-      foreach ($RouteName in $Table.Routes)
+      foreach ($RouteName in $Table.Routes.ToList())
       {
         Write-Output -InputObject "Updating route table..."
         Write-Output -InputObject $RTable.Name
@@ -216,16 +216,14 @@ $VMS = Get-AzVM
 Get-Subscriptions
 Get-FWInterfaces
 
-$FW1Down = Test-VMStatus -VM $VMFW1Name -FwResourceGroup $FW1RGName
 
-Write-Host " FW1Down is: $FW1Down "
-Get-AzResource -TagName nva_ha_udr -TagValue $TagValue | Format-Table
+
 $Res = Get-AzResource -TagName nva_ha_udr -TagValue $TagValue 
 Write-Host " Interfaces: $PrimaryInts $SecondaryInts "
-Write-Host " Route Table with tag: $Res "
+Write-Host " Route Table with tag: $Res.Name "
 
 Write-Host " ListofSubs: $ListOfSubscriptionIDs "
-Write-Host " VMs: $VMS "
+
 
 
 
