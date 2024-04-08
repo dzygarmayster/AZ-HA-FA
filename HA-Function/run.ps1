@@ -227,3 +227,83 @@ Write-Host " Route Table with tag: $Res "
 Write-Host " ListofSubs: $ListOfSubscriptionIDs "
 Write-Host " VMs: $VMS "
 
+
+
+For ($Ctr = 1; $Ctr -le $IntTries; $Ctr++)
+{
+  
+  if ($Monitor -eq 'VMStatus')
+  {
+    $FW1Down = Test-VMStatus -VM $VMFW1Name -FwResourceGroup $FW1RGName
+    $FW2Down = Test-VMStatus -VM $VMFW2Name -FwResourceGroup $FW2RGName
+  }
+
+  if ($Monitor -eq 'TCPPort')
+  {
+    $FW1Down = -not (Test-TCPPort -Server $TCPFW1Server -Port $TCPFW1Port)
+    $FW2Down = -not (Test-TCPPort -Server $TCPFW2Server -Port $TCPFW2Port)
+  }
+
+  Write-Output -InputObject "Pass $Ctr of $IntTries - FW1Down is $FW1Down, FW2Down is $FW2Down"
+
+  if ($FW1Down) 
+  {
+    $CtrFW1++
+  }
+
+  if ($FW2Down) 
+  {
+    $CtrFW2++
+  }
+
+  Write-Output -InputObject "Sleeping $IntSleep seconds"
+  Start-Sleep $IntSleep
+}
+
+# Reset individual test status and determine overall NVA firewall status
+
+$FW1Down = $False
+$FW2Down = $False
+
+if ($CtrFW1 -eq $intTries) 
+{
+  $FW1Down = $True
+}
+
+if ($CtrFW2 -eq $intTries) 
+{
+  $FW2Down = $True
+}
+
+# Failover or failback if needed
+
+if (($FW1Down) -and -not ($FW2Down))
+{
+  if ($FailOver)
+  {
+    Write-Output -InputObject 'FW1 Down - Failing over to FW2'
+    Start-Failover 
+  }
+}
+elseif (-not ($FW1Down) -and ($FW2Down))
+{
+  if ($FailBack)
+  {
+    Write-Output -InputObject 'FW2 Down - Failing back to FW1'
+    Start-Failback
+  }
+  else 
+  {
+    Write-Output -InputObject 'FW2 Down - Failing back disabled'
+  }
+}
+elseif (($FW1Down) -and ($FW2Down))
+{
+  Write-Output -InputObject 'Both FW1 and FW2 Down - Manual recovery action required'
+  Send-AlertMessage -message "NVA Alert: Both FW1 and FW2 Down - Manual recovery action is required"
+}
+else
+{
+  Write-Output -InputObject 'Both FW1 and FW2 Up - No action is required'
+}
+
