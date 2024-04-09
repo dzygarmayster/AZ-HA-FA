@@ -4,13 +4,34 @@ param($Timer)
 # Get the current universal time in the default string format.
 $currentUTCtime = (Get-Date).ToUniversalTime()
 
-# The 'IsPastDue' property is 'true' when the current function invocation is later than scheduled.
-#if ($Timer.IsPastDue) {
-#    Write-Host "PowerShell timer is running late!"
-#}
+#--------------------------------------------------------------------------
 #
-# Write an information log with the current time.
-#Write-Host "PowerShell timer trigger function ran! TIME: $currentUTCtime"
+# High Availability (HA) Network Virtual Appliance (NVA) Failover Function
+#
+# This script provides a sample for monitoring HA NVA firewall status and performing
+# failover and/or failback if needed.
+#
+# This script is used as part of an Azure function app called by a Timer Trigger event.  
+#
+# To configure this function app, the following items must be setup:
+#
+#   - Provision the pre-requisite Azure Resource Groups, Virtual Networks and Subnets, Network Virtual Appliances
+#
+#   - Create an Azure timer function app
+#
+#   - Set the Azure function app settings with credentials
+#     SP_PASSWORD, SP_USERNAME, TENANTID, SUBSCRIPTIONID, AZURECLOUD must be added
+#     AZURECLOUD = "AzureCloud" or "AzureUSGovernment"
+#
+#   - Set Firewall VM names and Resource Group in the Azure function app settings
+#     FW1NAME, FW2NAME, FWMONITOR, FW1FQDN, FW1PORT, FW2FQDN, FW2PORT, FWRGNAME, FWTRIES, FWDELAY, FWUDRTAG must be added
+#     FWMONITOR = "VMStatus" or "TCPPort" - If using "TCPPort", then also set FW1FQDN, FW2FQDN, FW1PORT and FW2PORT values
+#
+#   - Set Timer Schedule where positions represent: Seconds - Minutes - Hours - Day - Month - DayofWeek
+#     Example:  "*/30 * * * * *" to run on multiples of 30 seconds
+#     Example:  "0 */5 * * * *" to run on multiples of 5 minutes on the 0-second mark
+#
+#--------------------------------------------------------------------------
 
 Write-Output -InputObject "HA NVA timer trigger function executed at:$(Get-Date)"
 
@@ -23,7 +44,7 @@ $VMFW2Name = $env:FW2NAME      # Set the Name of the secondary NVA firewall
 $FW1RGName = $env:FWRGNAME     # Set the ResourceGroup that contains FW1
 $FW2RGName = $env:FWRGNAME     # Set the ResourceGroup that contains FW2
 $Monitor = $env:FWMONITOR      # "VMStatus" or "TCPPort" are valid values
-$TagValue = $env:FWUDRTAG
+$TagValue = $env:FWUDRTAG	   # Set the Route table tag. TagName: nva_ha_udr, TagValue: use your own
 
 #--------------------------------------------------------------------------
 # Set the failover and failback behavior for the firewalls
