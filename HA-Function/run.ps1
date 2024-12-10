@@ -228,7 +228,7 @@ Function Get-Subscriptions
 # Main code block for Azure function app                       
 #--------------------------------------------------------------------------
 
-
+<#
 $Password = ConvertTo-SecureString $env:SP_PASSWORD -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential ($env:SP_USERNAME, $Password)
 $AzureEnv = Get-AzEnvironment -Name $env:AZURECLOUD
@@ -343,4 +343,4 @@ else
 {
   Write-Output -InputObject 'Both FW1 and FW2 Up - No action is required'
 }
-
+#>
